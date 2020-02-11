@@ -363,6 +363,11 @@ if(CMAKE_SYSTEM MATCHES "VxWorks\\-7$")
   set(HAVE_LIBUTIL 0)
 endif()
 
+if(WASI)
+  set(LIBUTIL_EXPECTED 0)
+  set(HAVE_LIBUTIL 0)
+endif()
+
 if(LIBUTIL_EXPECTED)
   check_function_exists("openpty" HAVE_BUILTIN_OPENPTY)
   if(HAVE_BUILTIN_OPENPTY)

@@ -6,7 +6,7 @@ set(MODULE_SOURCES # Equivalent to MODULE_OBJS in Makefile.pre
     ${SRC_DIR}/Modules/gcmodule.c
     ${SRC_DIR}/Modules/main.c
 )
-if(UNIX)
+if(UNIX OR WASI)
     list(APPEND MODULE_SOURCES
         ${SRC_DIR}/Modules/getpath.c
     )
@@ -250,7 +250,7 @@ set(PYTHON_COMMON_SOURCES
     ${SRC_DIR}/Python/traceback.c
     ${SRC_DIR}/Python/_warnings.c
 )
-if(UNIX)
+if(UNIX OR WASI)
     list(APPEND PYTHON_COMMON_SOURCES
         ${SRC_DIR}/Python/frozenmain.c
     )
@@ -260,7 +260,7 @@ else()
     )
 endif()
 
-if(UNIX OR MINGW)
+if(UNIX OR WASI OR MINGW)
     set_property(
         SOURCE ${SRC_DIR}/Python/getplatform.c
         PROPERTY COMPILE_DEFINITIONS
@@ -378,7 +378,7 @@ endif()
 if(WITH_THREAD)
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 endif()
-if(UNIX)
+if(UNIX OR WASI)
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ${LIBUTIL_LIBRARIES} ${M_LIBRARIES})
 endif()
 if(WIN32 AND IS_PY3)
@@ -458,7 +458,7 @@ set(LIBPYTHON_SOURCES
     ${LIBPYTHON_OMIT_FROZEN_SOURCES}
     ${LIBPYTHON_FROZEN_SOURCES}
 )
-if(UNIX)
+if(UNIX OR WASI)
     list(APPEND LIBPYTHON_SOURCES
         ${SRC_DIR}/Python/frozen.c
     )
@@ -563,7 +563,7 @@ if(BUILD_LIBPYTHON_SHARED)
         target_link_libraries(${targetname} ${python3stub_lib})
     endif()
 
-    if(IS_PY3 AND UNIX AND NOT APPLE)
+    if(IS_PY3 AND (UNIX OR WASI) AND NOT APPLE)
         add_library(${targetname} SHARED ${PROJECT_SOURCE_DIR}/cmake/empty.c)
         set_target_properties(${targetname} PROPERTIES
             LINK_FLAGS "-Wl,--no-as-needed"

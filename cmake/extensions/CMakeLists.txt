@@ -22,6 +22,14 @@ if(CMAKE_VERSION VERSION_LESS 2.8.12)
     endif()
 endif()
 
+if(WASI)
+    set(ENABLE_CTYPES OFF CACHE BOOL "${warn}" FORCE)
+    set(ENABLE_CTYPES_TEST OFF CACHE BOOL "${warn}" FORCE)
+    set(ENABLE_DECIMAL OFF CACHE BOOL "${warn}" FORCE)
+    set(ENABLE_PYEXPAT OFF CACHE BOOL "${warn}" FORCE)
+    set(WITH_THREAD OFF CACHE BOOL "${warn}" FORCE)
+endif()
+
 set(WIN32_BUILTIN )
 if(WIN32)
     set(WIN32_BUILTIN BUILTIN)
@@ -165,6 +173,7 @@ add_python_extension(nis
 )
 
 add_python_extension(posix REQUIRES UNIX BUILTIN SOURCES posixmodule.c)
+add_python_extension(posix REQUIRES WASI BUILTIN SOURCES posixmodule.c)
 add_python_extension(pwd REQUIRES UNIX BUILTIN SOURCES pwdmodule.c) # this is needed to find out the user's home dir if $HOME is not set
 add_python_extension(resource REQUIRES UNIX SOURCES resource.c)
 add_python_extension(spwd REQUIRES UNIX HAVE_GETSPNAM HAVE_GETSPENT SOURCES spwdmodule.c)
@@ -255,24 +264,26 @@ else()
     add_python_extension(select SOURCES selectmodule.c)
 endif()
 
-# Socket is different on Windows
-set(_socket_SOURCES socketmodule.c)
-if(WIN32)
-    add_python_extension(_socket
-        REQUIRES HAVE_LIBM
-        SOURCES ${_socket_SOURCES}
-        DEFINITIONS EAI_ADDRFAMILY
-                    HAVE_SOCKADDR_STORAGE
-                    HAVE_ADDRINFO
-        LIBRARIES ws2_32 ${M_LIBRARIES}
-    )
-else()
-    list(APPEND _socket_SOURCES timemodule.c)
-    add_python_extension(_socket
-        REQUIRES HAVE_LIBM BUILTIN
-        SOURCES ${_socket_SOURCES}
-        LIBRARIES ${M_LIBRARIES}
-    )
+if (NOT WASI)
+    # Socket is different on Windows
+    set(_socket_SOURCES socketmodule.c)
+    if(WIN32)
+        add_python_extension(_socket
+            REQUIRES HAVE_LIBM
+            SOURCES ${_socket_SOURCES}
+            DEFINITIONS EAI_ADDRFAMILY
+                        HAVE_SOCKADDR_STORAGE
+                        HAVE_ADDRINFO
+            LIBRARIES ws2_32 ${M_LIBRARIES}
+        )
+    else()
+        list(APPEND _socket_SOURCES timemodule.c)
+        add_python_extension(_socket
+            REQUIRES HAVE_LIBM BUILTIN
+            SOURCES ${_socket_SOURCES}
+            LIBRARIES ${M_LIBRARIES}
+        )
+    endif()
 endif()
 
 set(_libffi_system_dir ${CMAKE_SYSTEM_PROCESSOR})

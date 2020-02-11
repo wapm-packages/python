@@ -96,11 +96,14 @@ macro(append_if_absent VARNAME VALUE)
 endmacro()
 
 option(USE_SYSTEM_LIBRARIES "Use system libraries" ON)
+# if(WASI)
+# option(USE_SYSTEM_LIBRARIES "Use system libraries" ON)
+# endif()
 
 # Set platform dependent defaults
 set(_use_builtin_zlib_default OFF)
 set(_use_system_zlib_default ON)
-if(WIN32)
+if(WASI OR WIN32)
   set(_use_builtin_zlib_default ON)
   set(_use_system_zlib_default OFF)
 endif()
@@ -124,12 +127,12 @@ cmake_dependent_option(USE_LIBEDIT "Use libedit instead of readline" OFF
                        "USE_SYSTEM_READLINE" OFF)
 
 option(WITH_TSC "profile with the Pentium timestamp counter" OFF)
-option(ENABLE_IPV6 "Enable IP v6" ON)
+option(ENABLE_IPV6 "Enable IP v6" OFF)
 option(WITH_DOC_STRINGS "Enable if you want documentation strings in extension modules" ON)
 set(Py_DEBUG OFF) # TODO - Build debugging interpreter
 option(WITH_PYMALLOC "Define if you want to compile in Python-specific mallocs" ON)
-option(WITH_THREAD "Compile in rudimentary thread support" ON)
-if(UNIX)
+option(WITH_THREAD "Compile in rudimentary thread support" OFF)
+if(UNIX OR WASI)
     option(WITH_STATIC_DEPENDENCIES "Restrict extensions and external dependencies to static libraries" OFF)
     if(WITH_STATIC_DEPENDENCIES)
         if(NOT POLICY CMP0065)
@@ -325,7 +328,7 @@ include(cmake/ConfigureChecks.cmake)
 
 # Set PYTHONHOME
 set(LIBDIR "Lib") # See Lib/distutils/sysconfig.py - function 'get_python_lib'
-if(UNIX)
+if(UNIX OR WASI)
     set(LIBDIR "lib")
 endif()
 if(USE_LIB64)
@@ -333,7 +336,7 @@ if(USE_LIB64)
     set(LIBDIR "lib64")
 endif()
 set(PYTHONHOME "${LIBDIR}")
-if(UNIX)
+if(UNIX OR WASI)
     set(PYTHONHOME "${PYTHONHOME}/${LIBPYTHON}")
 endif()
 
@@ -381,7 +384,11 @@ set(EXTRA_PYTHONPATH "" CACHE STRING
     "A colon (:) separated list of extra paths to add to the PYTHONPATH")
 
 # Configure 'pyconfig.h'
-if(UNIX)
+if(WASI)
+    set(PYCONFIG_BUILD_DIR ${BIN_BUILD_DIR})
+    configure_file(cmake/config-wasi/pyconfig.h.in
+                   ${PYCONFIG_BUILD_DIR}/pyconfig.h)
+elseif(UNIX)
     set(PYCONFIG_BUILD_DIR ${BIN_BUILD_DIR})
     configure_file(cmake/config-unix/pyconfig.h.in
                    ${PYCONFIG_BUILD_DIR}/pyconfig.h)
@@ -556,7 +563,7 @@ configure_file(
 
 show_extension_summary()
 
-if(UNIX)
+if(UNIX OR WASI)
 
     # python.pc
     configure_file(cmake/python.pc.in
