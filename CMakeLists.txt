@@ -414,6 +414,19 @@ include_directories(${INCLUDE_BUILD_DIR})
 include_directories(${PYCONFIG_BUILD_DIR})
 include_directories(${SRC_DIR}/Python)
 
+# can be disabled on gcc by using the -fno-gcse flag (or possibly
+# -fno-crossjumping).
+if(WASI)
+    # append_if_absent(CMAKE_C_FLAGS "-fno-gcse")
+    append_if_absent(CMAKE_C_FLAGS "-g")
+    append_if_absent(CMAKE_C_FLAGS "-fPIC")
+    append_if_absent(CMAKE_C_FLAGS "-fwrapv")
+    append_if_absent(CMAKE_C_FLAGS "-Wstrict-prototypes")
+    append_if_absent(CMAKE_C_FLAGS "-fno-strict-aliasing")
+    append_if_absent(CMAKE_C_FLAGS "-Wsign-compare")
+    append_if_absent(CMAKE_C_FLAGS "-Wunreachable-code")    
+endif()
+
 # Set cflags used by all components
 if(CMAKE_C_COMPILER_ID MATCHES GNU)
     if(PY_VERSION VERSION_EQUAL "3.6" OR PY_VERSION VERSION_GREATER "3.6")
@@ -457,7 +470,7 @@ file(WRITE ${CONFIG_BUILD_DIR}/PythonTargets.cmake "")
 # Define python executable wrapper command to ensure
 # python executable resolves the expected python library.
 set(PYTHON_WRAPPER_COMMAND )
-if(BUILD_LIBPYTHON_SHARED AND UNIX)
+if(BUILD_LIBPYTHON_SHARED AND (UNIX OR WASI))
     set(_envvar LD_LIBRARY_PATH)
     if(APPLE)
         set(_envvar DYLD_LIBRARY_PATH)
