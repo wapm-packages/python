@@ -6,7 +6,7 @@ set(MODULE_SOURCES # Equivalent to MODULE_OBJS in Makefile.pre
     ${SRC_DIR}/Modules/gcmodule.c
     ${SRC_DIR}/Modules/main.c
 )
-if(UNIX OR WASI)
+if(UNIX)
     list(APPEND MODULE_SOURCES
         ${SRC_DIR}/Modules/getpath.c
     )
@@ -23,8 +23,22 @@ if(UNIX OR WASI)
             VPATH="."
             PYTHONPATH="${PYTHONPATH}"
       )
-elseif(WIN32)
+elseif(WASI)
     list(APPEND MODULE_SOURCES
+        ${SRC_DIR}/Modules/getpath.c
+    )
+    set(PYTHONPATH "${EXTRA_PYTHONPATH}:plat-${PY_PLATFORM}")
+    set_property(
+        SOURCE ${SRC_DIR}/Modules/getpath.c
+        PROPERTY COMPILE_DEFINITIONS
+            PREFIX="${CMAKE_INSTALL_PREFIX}"
+            EXEC_PREFIX="${CMAKE_INSTALL_PREFIX}"
+            VERSION="${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
+            VPATH="."
+            PYTHONPATH="${PYTHONPATH}"
+      )
+elseif(WIN32)
+      list(APPEND MODULE_SOURCES
         ${SRC_DIR}/PC/getpathp.c
     )
     # HACK To workaround limitation in escaping logic of CMake, the pythonpath

@@ -45,10 +45,10 @@ WIN32 is still required for the locale module.
 #endif
 
 #define _Py_PASTE_VERSION(SUFFIX) \
-  ("\n[GCC v" __VERSION__ " " SUFFIX "]")
+  ("\n[Wasm WASI v" __VERSION__ " " SUFFIX "]")
 
 #ifndef COMPILER
-# define COMPILER _Py_PASTE_VERSION("32 bit (i686)")
+# define COMPILER _Py_PASTE_VERSION("Wasienv")
 #endif /* !COMPILER */
 
 /* We only set these values when building Python - we don't want to force
@@ -324,6 +324,10 @@ WIN32 is still required for the locale module.
 /* Define as the size of the unicode type. */
 /* This is enough for unicodeobject.h to do the "right thing" on Windows. */
 #cmakedefine Py_UNICODE_SIZE @Py_UNICODE_SIZE@
+
+/* Define to 1 if you have the `fdopendir' function. [Python 3] */
+// #cmakedefine HAVE_FDOPENDIR 1
+#undef HAVE_FDOPENDIR
 
 /* Use Python's own small-block memory-allocator. */
 // #define WITH_PYMALLOC 1
