@@ -54,7 +54,7 @@
 
 
 #if defined(_MSC_VER)
-  #define ALWAYS_INLINE __forceinline
+  #define ALWAYS_INLINE extern __forceinline
 #elif defined(LEGACY_COMPILER)
   #define ALWAYS_INLINE
   #undef inline

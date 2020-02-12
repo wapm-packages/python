@@ -38,7 +38,7 @@
 #include "bits.h"
 #include "constants.h"
 #include "typearith.h"
-#include "io.h"
+#include "mpd_io.h"
 
 
 /* This file contains functions for decimal <-> string conversions, including
