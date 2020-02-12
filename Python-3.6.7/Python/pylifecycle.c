@@ -68,7 +68,7 @@ extern int _PyFaulthandler_Init(void);
 extern void _PyFaulthandler_Fini(void);
 extern void _PyHash_Fini(void);
 extern int _PyTraceMalloc_Init(void);
-extern int _PyTraceMalloc_Fini(void);
+extern void _PyTraceMalloc_Fini(void);
 
 #ifdef WITH_THREAD
 extern void _PyGILState_Init(PyInterpreterState *, PyThreadState *);
@@ -237,6 +237,8 @@ get_locale_encoding(void)
     }
     return get_codec_name(codeset);
 #elif defined(__ANDROID__)
+    return get_codec_name("UTF-8");
+#elif defined(__wasi__)
     return get_codec_name("UTF-8");
 #else
     PyErr_SetNone(PyExc_NotImplementedError);
