@@ -1049,6 +1049,9 @@ is_valid_fd(int fd)
        such error. */
     struct stat st;
     return (fstat(fd, &st) == 0);
+#elif __wasi__
+    struct stat st;
+    return (fstat(fd, &st) == 0);
 #else
     int fd2;
     if (fd < 0)
