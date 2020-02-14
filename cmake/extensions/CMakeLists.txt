@@ -34,6 +34,9 @@ set(WIN32_BUILTIN )
 if(WIN32)
     set(WIN32_BUILTIN BUILTIN)
 endif()
+if(WASI)
+    set(WIN32_BUILTIN ALWAYS_BUILTIN)
+endif()
 
 # XXX Following modules are missing:
 # lzma
@@ -95,7 +98,7 @@ add_python_extension(_json ${WIN32_BUILTIN} SOURCES _json.c)
 add_python_extension(_locale ${WIN32_BUILTIN} SOURCES _localemodule.c) # access to ISO C locale support
 add_python_extension(_lsprof ${WIN32_BUILTIN} SOURCES _lsprof.c rotatingtree.c)
 add_python_extension(math ${WIN32_BUILTIN} SOURCES _math.c mathmodule.c)
-add_python_extension(mmap ${WIN32_BUILTIN} SOURCES mmapmodule.c)
+# add_python_extension(mmap ${WIN32_BUILTIN} SOURCES mmapmodule.c)
 add_python_extension(_multibytecodec ${WIN32_BUILTIN} SOURCES cjkcodecs/multibytecodec.c)
 add_python_extension(operator ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES operator.c)
 add_python_extension(parser ${WIN32_BUILTIN} SOURCES parsermodule.c)
@@ -257,8 +260,10 @@ elseif(WIN32)
     )
 endif()
 
+if(WASI)
+    add_python_extension(select ${WIN32_BUILTIN} SOURCES selectmodule.c)
 # Select needs winsock on Windows
-if(WIN32)
+elseif(WIN32)
     add_python_extension(select SOURCES selectmodule.c LIBRARIES ws2_32)
 else()
     add_python_extension(select SOURCES selectmodule.c)

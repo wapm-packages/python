@@ -26,6 +26,13 @@
 #undef HAVE_BROKEN_POLL
 #endif
 
+#ifdef __wasi__
+    /* Perform runtime testing for a broken poll on OSX to make it easier
+     * to use the same binary on multiple releases of the OS.
+     */
+#undef HAVE_BROKEN_POLL
+#endif
+
 /* Windows #defines FD_SETSIZE to 64 if FD_SETSIZE isn't already defined.
    64 is too small (too many people have bumped into that limit).
    Here we boost it.
