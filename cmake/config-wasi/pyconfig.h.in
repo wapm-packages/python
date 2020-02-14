@@ -4,25 +4,16 @@
 /* pyconfig.h.  NOT Generated automatically by configure.
 
 This is a manually maintained version (initially based
-on "PC/pyconfig.h") used for (i686|x86_64)-w64-mingw32
-toolchains (provided by MXE).
-
-WINDOWS DEFINES:
-The code specific to Windows should be wrapped around one of
-the following #defines
-
-MS_WIN64 - Code specific to the MS Win64 API
-MS_WIN32 - Code specific to the MS Win32 (and Win64) API (obsolete, this covers all supported APIs)
-MS_WINDOWS - Code specific to Windows, but all versions.
-Py_ENABLE_SHARED - Code if the Python core is built as a DLL.
-
-NOTE: The following symbols are deprecated:
-NT, USE_DL_EXPORT, USE_DL_IMPORT, DL_EXPORT, DL_IMPORT
-MS_CORE_DLL.
-
-WIN32 is still required for the locale module.
-
+on "PC/pyconfig.h") used for Wasm WASI
+toolchains.
 */
+
+#define PREFIX ""
+#define EXEC_PREFIX ""
+
+#ifndef PYTHONPATH
+#  define PYTHONPATH "./"
+#endif
 
 /* Deprecated USE_DL_EXPORT macro - please use Py_BUILD_CORE */
 #ifdef USE_DL_EXPORT
@@ -336,7 +327,7 @@ WIN32 is still required for the locale module.
 #undef HAVE_FDOPENDIR
 
 /* Use Python's own small-block memory-allocator. */
-// #define WITH_PYMALLOC 1
+#define WITH_PYMALLOC 1
 
 /* Define if you have clock.  */
 /* #define HAVE_CLOCK */

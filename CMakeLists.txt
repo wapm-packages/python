@@ -418,17 +418,13 @@ include_directories(${SRC_DIR}/Python)
 # -fno-crossjumping).
 if(WASI)
     # append_if_absent(CMAKE_C_FLAGS "-fno-gcse")
-    append_if_absent(CMAKE_C_FLAGS "-g")
     append_if_absent(CMAKE_C_FLAGS "-fPIC")
     append_if_absent(CMAKE_C_FLAGS "-fwrapv")
     append_if_absent(CMAKE_C_FLAGS "-Wstrict-prototypes")
     append_if_absent(CMAKE_C_FLAGS "-fno-strict-aliasing")
     append_if_absent(CMAKE_C_FLAGS "-Wsign-compare")
     append_if_absent(CMAKE_C_FLAGS "-Wunreachable-code")    
-endif()
-
-# Set cflags used by all components
-if(CMAKE_C_COMPILER_ID MATCHES GNU)
+elseif(CMAKE_C_COMPILER_ID MATCHES GNU)
     if(PY_VERSION VERSION_EQUAL "3.6" OR PY_VERSION VERSION_GREATER "3.6")
         append_if_absent(CMAKE_C_FLAGS "-std=c99")
     endif()
