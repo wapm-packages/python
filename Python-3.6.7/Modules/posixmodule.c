@@ -2032,7 +2032,7 @@ posix_do_stat(const char *function_name, path_t *path,
     STRUCT_STAT st;
     int result;
 
-#if !defined(MS_WINDOWS) && !defined(HAVE_FSTATAT) && !defined(HAVE_LSTAT)
+#if !defined(MS_WINDOWS) && !defined(__wasi__) && !defined(HAVE_FSTATAT) && !defined(HAVE_LSTAT)
     if (follow_symlinks_specified(function_name, follow_symlinks))
         return NULL;
 #endif
