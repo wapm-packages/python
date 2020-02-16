@@ -44,6 +44,14 @@ How to use this buildsystem:
   make -j10
   make install
 
+  # WASI
+  mkdir python-wasi
+  cd python-wasi
+  mkdir install
+  wasimake cmake -DCMAKE_INSTALL_PREFIX:PATH=`pwd`/install ..
+  make -j10
+  make install
+
   # Windows
   cd %HOME%/scratch
   mkdir python-build

@@ -1,0 +1,21 @@
+[package]
+name = "python"
+version = "0.1.0"
+description = "Python is an interpreted, high-level, general-purpose programming language"
+license = "ISC"
+repository = "https://github.com/wapm-packages/python"
+
+[[module]]
+name = "python"
+source = "bin/python.wasm"
+abi = "wasi"
+
+[module.interfaces]
+wasi = "0.0.0-unstable"
+
+[[command]]
+name = "python"
+module = "python"
+
+[fs]
+"lib"="lib"
