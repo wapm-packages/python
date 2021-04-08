@@ -26,7 +26,7 @@ if(WASI)
     set(ENABLE_CTYPES OFF CACHE BOOL "${warn}" FORCE)
     set(ENABLE_CTYPES_TEST OFF CACHE BOOL "${warn}" FORCE)
     set(ENABLE_DECIMAL OFF CACHE BOOL "${warn}" FORCE)
-    set(ENABLE_PYEXPAT OFF CACHE BOOL "${warn}" FORCE)
+    set(ENABLE_PYEXPAT ON CACHE BOOL "${warn}" FORCE)
     set(WITH_THREAD OFF CACHE BOOL "${warn}" FORCE)
 endif()
 
@@ -269,26 +269,18 @@ else()
     add_python_extension(select SOURCES selectmodule.c)
 endif()
 
-if (NOT WASI)
-    # Socket is different on Windows
-    set(_socket_SOURCES socketmodule.c)
-    if(WIN32)
-        add_python_extension(_socket
-            REQUIRES HAVE_LIBM
-            SOURCES ${_socket_SOURCES}
-            DEFINITIONS EAI_ADDRFAMILY
-                        HAVE_SOCKADDR_STORAGE
-                        HAVE_ADDRINFO
-            LIBRARIES ws2_32 ${M_LIBRARIES}
-        )
-    else()
-        list(APPEND _socket_SOURCES timemodule.c)
-        add_python_extension(_socket
-            REQUIRES HAVE_LIBM BUILTIN
-            SOURCES ${_socket_SOURCES}
-            LIBRARIES ${M_LIBRARIES}
-        )
-    endif()
+# Socket is different on Windows
+set(_socket_SOURCES socketmodule.c)
+if(WIN32)
+    add_python_extension(_socket
+        REQUIRES HAVE_LIBM
+        SOURCES ${_socket_SOURCES}
+        DEFINITIONS EAI_ADDRFAMILY
+                    HAVE_SOCKADDR_STORAGE
+                    HAVE_ADDRINFO
+        LIBRARIES ws2_32 ${M_LIBRARIES}
+    )
+else()
 endif()
 
 set(_libffi_system_dir ${CMAKE_SYSTEM_PROCESSOR})
@@ -534,11 +526,14 @@ else()
         expat/xmlrole.c
         expat/xmltok.c
         )
+    list(APPEND _pyexpat_definitions HAVE_MEMMOVE)
+    list(APPEND _pyexpat_definitions HAVE_ARC4RANDOM)
     if(UNIX)
         list(APPEND _pyexpat_definitions HAVE_EXPAT_CONFIG_H)
         # bpo-30947: Python uses best available entropy sources to
         # call XML_SetHashSalt(), expat entropy sources are not needed
         list(APPEND _pyexpat_definitions XML_POOR_ENTROPY)
+    elseif(WASI)
     elseif(WIN32)
         list(APPEND _pyexpat_definitions COMPILED_FROM_DSP)
         if(EXISTS "${SRC_DIR}/Modules/expat/loadlibrary.c")

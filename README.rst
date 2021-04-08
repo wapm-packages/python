@@ -48,7 +48,7 @@ How to use this buildsystem:
   mkdir python-wasi
   cd python-wasi
   mkdir install
-  wasimake cmake -DCMAKE_INSTALL_PREFIX:PATH=`pwd`/install ..
+  wasimake cmake -DCMAKE_INSTALL_PREFIX:PATH=`pwd`/install -DOPENSSL_INCLUDE_DIR:PATH=/Users/syrus/Development/OpenSSL/include -DOPENSSL_ROOT_DIR=/Users/syrus/Development/OpenSSL -DUSE_SYSTEM_OpenSSL=OFF -DOPENSSL_LIBRARIES=ssl\;crypto -E env LDFLAGS="-Wl,-L/Users/syrus/Development/OpenSSL/lib" ..
   make -j10
   make install
 

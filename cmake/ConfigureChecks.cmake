@@ -56,6 +56,8 @@ if(USE_SYSTEM_OpenSSL)
     find_package(OpenSSL 0.9.7)
 endif()
 
+find_package(OpenSSL 1.1.0)
+
 if(USE_SYSTEM_TCL)
     find_package(TCL)
 endif()
@@ -161,10 +163,10 @@ set(_msg "Checking SOABI")
 try_run(PLATFORM_RUN PLATFORM_COMPILE
         ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/cmake/platform.c
         RUN_OUTPUT_VARIABLE PLATFORM_TRIPLET)
-if(NOT PLATFORM_COMPILE)
-  message(FATAL_ERROR "We could not determine the platform. Please clean the ${CMAKE_PROJECT_NAME} environment and try again...")
-endif()
-set(SOABI "cpython-${PY_VERSION_MAJOR}${PY_VERSION_MINOR}${ABIFLAGS}-${PLATFORM_TRIPLET}")
+#if(NOT PLATFORM_COMPILE)
+#  message(FATAL_ERROR "We could not determine the platform. Please clean the ${CMAKE_PROJECT_NAME} environment and try again...")
+#endif()
+set(SOABI "cpython-${PY_VERSION_MAJOR}${PY_VERSION_MINOR}${ABIFLAGS}-wasi")
 
 message(STATUS "${_msg} - ${SOABI}")
 
@@ -618,7 +620,7 @@ add_cond(CMAKE_REQUIRED_LIBRARIES HAVE_LIBINTL ${HAVE_LIBINTL})
 add_cond(CMAKE_REQUIRED_LIBRARIES HAVE_LIBUTIL "${LIBUTIL_LIBRARIES}")
 add_cond(CMAKE_EXTRA_INCLUDE_FILES HAVE_WCHAR_H wchar.h)
 
-TEST_BIG_ENDIAN(WORDS_BIGENDIAN)
+# TEST_BIG_ENDIAN(WORDS_BIGENDIAN)
 
 check_type_size(double SIZEOF_DOUBLE) # libffi and cpython
 check_type_size(float SIZEOF_FLOAT)

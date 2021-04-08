@@ -305,12 +305,13 @@ getaddrinfo(const char*hostname, const char*servname,
                 pai->ai_socktype = SOCK_STREAM;
                 break;
             default:
-                pai->ai_socktype = SOCK_RAW;
+                ERR(EAI_SOCKTYPE);
+                // pai->ai_socktype = SOCK_RAW;
                 break;
             }
             break;
-        case SOCK_RAW:
-            break;
+        // case SOCK_RAW:
+        //     break;
         case SOCK_DGRAM:
             if (pai->ai_protocol != IPPROTO_UDP &&
                 pai->ai_protocol != GAI_ANY)

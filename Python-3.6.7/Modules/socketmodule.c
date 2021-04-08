@@ -6903,7 +6903,7 @@ PyInit__socket(void)
     /* SOCK_RAW is marked as optional in the POSIX specification */
     PyModule_AddIntMacro(m, SOCK_RAW);
 #endif
-    PyModule_AddIntMacro(m, SOCK_SEQPACKET);
+    // PyModule_AddIntMacro(m, SOCK_SEQPACKET);
 #if defined(SOCK_RDM)
     PyModule_AddIntMacro(m, SOCK_RDM);
 #endif

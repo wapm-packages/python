@@ -119,6 +119,9 @@ toolchains.
 /* Define this to be extension of shared libraries (including the dot!).[Python 2.7]  */
 #define SHLIB_EXT "@CMAKE_SHARED_MODULE_SUFFIX@"
 
+/* Define to 1 if you have the `getcwd' function. [Python 2.7] */
+#cmakedefine HAVE_GETCWD 1
+
 /* Define if i>>j for signed int i does not extend the sign bit when i < 0 */
 #cmakedefine SIGNED_RIGHT_SHIFT_ZERO_FILLS
 
@@ -517,3 +520,35 @@ toolchains.
 #define MAXPATHLEN 1024
 
 #endif /* !Py_CONFIG_H */
+
+
+/* Sockets */
+#cmakedefine HAVE_ADDRINFO 1
+#cmakedefine HAVE_SOCKADDR_STORAGE 1
+#cmakedefine SOMAXCONN 128
+
+/* Define if you have the 'inet_aton' function. */
+#cmakedefine HAVE_INET_ATON 1
+
+/* Define if you have the 'inet_pton' function. */
+#cmakedefine HAVE_INET_PTON 1
+
+/* Define if you have the getaddrinfo function. */
+#cmakedefine HAVE_GETADDRINFO 1
+
+/* Define to 1 if you have the `memmove' function. */
+#cmakedefine HAVE_MEMMOVE 1
+
+#cmakedefine HAVE_ARC4RANDOM 1
+
+/* Define if you want to compile in rudimentary thread support */
+// #cmakedefine WITH_THREAD 1
+
+// #define WITH_THREAD 1
+// #define HAVE_GETADDRINFO 1
+#define SOMAXCONN 128
+#define HAVE_MEMMOVE 1
+#define HAVE_ARC4RANDOM 1
+#define FOOBAR_THREADS 1
+
+#undef HAVE_PTHREAD_H
