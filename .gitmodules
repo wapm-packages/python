@@ -1,6 +1,6 @@
 [submodule "cpython"]
 	path = cpython
-	url = https://github.com/waynr/cpython
+	url = https://github.com/wasix-org/cpython
 	branch = wasix-compatibility
 [submodule "libs/zlib"]
 	path = libs/zlib
