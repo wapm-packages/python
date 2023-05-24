@@ -1,0 +1,4 @@
+[submodule "cpython"]
+	path = cpython
+	url = https://github.com/waynr/cpython
+	branch = wasix-compatibility
