@@ -1,18 +1,4 @@
 # Ignore in source build files and directories ...
-/cmake_install.cmake
-/CMakeBuild
-/CMakeCache.txt
-/CMakeFiles
-/CTestTestfile.cmake
-/DartConfiguration.tcl
-/install_manifest.txt
-Makefile
-
-/bin
-/lib
-/Misc/
-/share/
-
 # Ignore all dotfiles...
 .*
 !.gitattributes
@@ -26,21 +12,8 @@ Makefile
 # except for .gitignore
 !.gitignore
 
-# Exclude QtCreator files
-CMakeLists.txt.user*
-
-# Ignore ctags file
-tags
-
 # Ignore pyc files
 *.pyc
 
-# Ignore Python source directories
-cython-*/
-# Python-*/
-
-# Ignore Python source archives
-Python-*.tgz
-Python-*.zip
-
-python-build/
+# Ignore build directories
+build*
