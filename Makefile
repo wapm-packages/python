@@ -13,8 +13,8 @@ export WASI_SYSROOT_LIBDIR = $(WASI_SYSROOT)/lib/wasm32-wasi
 export WASM_RUNTIME = wasmer
 # BUILDDIR is used by $(CPYTHON_DIR)/Tools/wasm/wasm_build.py, not to be
 # confused with BUILD_DIR
-export BUILDDIR = $(CPYTHON_DIR)/builddir-wasix-libc
-export PYTHON_LIB_ZIP = $(BUILDDIR)/wasi/usr/local/lib/
+export BUILDDIR = $(CPYTHON_DIR)/builddir
+export PYTHON_LIB_ZIP = $(BUILDDIR)/wasix/usr/local/lib/
 
 WASI_SDK_VERSION_MAJOR = 20
 WASI_SDK_VERSION_MINOR = 0
@@ -53,7 +53,7 @@ vars:
 
 clean: python-clean zlib-clean wasixlibc-clean
 
-distclean: clean
+distclean: clean python-distclean
 	rm -rf ./wasi-sdk*
 
 ##
@@ -92,8 +92,13 @@ python-build-clean: python-clean python-build
 
 python-build: $(WASI_SDK_PATH)
 	cd $(CPYTHON_DIR) && \
-		./Tools/wasm/wasm_build.py wasi build && \
-		./Tools/wasm/wasm_build.py wasi stdlib
+		./Tools/wasm/wasm_build.py wasix build && \
+		./Tools/wasm/wasm_build.py wasix stdlib
+	mv $(BUILDDIR)/wasix/python.wasm $(BUILDDIR)/wasix/python.wasm.unopt
+	wasm-opt -O2 --asyncify \
+		$(BUILDDIR)/wasix/python.wasm.unopt \
+		-o $(BUILDDIR)/wasix/python.wasm
+
 
 python-autoconf:
 	docker run --rm \
@@ -106,14 +111,15 @@ python-autoconf:
 		autoconf2.69 \
 		chown -R $(shell id -u):$(shell id -g) /cpython
 
+python-distclean:
+	rm -rf $(BUILDDIR)
 
 python-clean:
 	rm -rf \
-		$(BUILDDIR)/build \
-		$(BUILDDIR)/wasi
+		$(BUILDDIR)/wasix
 
 unzip-stdlib:
-	cd $(BUILDDIR)/wasi/usr/local/lib/python3.12 && \
+	cd $(BUILDDIR)/wasix/usr/local/lib/python3.12 && \
 		unzip ../python312.zip
 
 
@@ -134,15 +140,15 @@ wasi-sdk: $(WASI_SDK_PATH)
 
 .python-zip-name:
 	wasmer run \
-		--mapdir /usr:$(BUILDDIR)/wasi/usr \
+		--mapdir /usr:$(BUILDDIR)/wasix/usr \
 		--mapdir /app/:$(CPYTHON_DIR)/PC/layout/support \
-		$(BUILDDIR)/wasi/python.wasm \
+		$(BUILDDIR)/wasix/python.wasm \
 		-- \
 		-c "import app.constants as constants; print(constants.PYTHON_ZIP_NAME)" > $@
 
-wapm: ZIP_FILE=$(BUILDDIR)/wasi/usr/local/lib/$(shell cat .python-zip-name)
-wapm: .python-zip-name $(BUILDDIR)/wasi/python.wasm
-	cp $(BUILDDIR)/wasi/python.wasm $(WAPM_DIR)/bin/python.wasm
+wapm: ZIP_FILE=$(BUILDDIR)/wasix/usr/local/lib/$(shell cat .python-zip-name)
+wapm: .python-zip-name $(BUILDDIR)/wasix/python.wasm
+	cp $(BUILDDIR)/wasix/python.wasm $(WAPM_DIR)/bin/python.wasm
 	rm -rf $(WAPM_DIR)/usr/local/lib
 	mkdir -p $(WAPM_DIR)/usr/local/lib
 	cd $(WAPM_DIR)/usr/local/lib && \
