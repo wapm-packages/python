@@ -1,6 +1,6 @@
 [package]
 name = "python"
-version = "3.12.0b1"
+version = "3.12.0"
 description = "Python is an interpreted, high-level, general-purpose programming language"
 license = "ISC"
 repository = "https://github.com/wapm-packages/python"
