@@ -96,8 +96,8 @@ python-build: $(WASI_SDK_PATH)
 
 python-clean:
 	rm -rf \
-		$(BUILD_DIR)/build \
-		$(BUILD_DIR)/wasi
+		$(BUILDDIR)/build \
+		$(BUILDDIR)/wasi
 
 unzip-stdlib:
 	cd $(BUILDDIR)/wasi/usr/local/lib/python3.12 && \
