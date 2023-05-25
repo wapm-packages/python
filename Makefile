@@ -17,8 +17,9 @@ export BUILDDIR = $(CPYTHON_DIR)/builddir-wasix-libc
 WASI_SDK_VERSION_MAJOR = 20
 WASI_SDK_VERSION_MINOR = 0
 WASI_SDK_BASE_URL = https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-$(WASI_SDK_VERSION_MAJOR)/
+WASI_SDK_TARBALL = $(DOWNLOADS_DIR)/wasi-sdk-$(WASI_SDK_VERSION_MAJOR).$(WASI_SDK_VERSION_MINOR).tar.gz
 
-# platform-specific settings
+# platform-specific setting
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
 	WASI_SDK_URL_PLATFORM = linux
@@ -106,12 +107,13 @@ unzip-stdlib:
 ##
 # wasi-sdk bits
 ##
-wasi-sdk.tar.gz:
+$(WASI_SDK_TARBALL):
+	mkdir -p $(DOWNLOADS_DIR)
 	wget $(WASI_SDK_URL) -O $@
 
-$(WASI_SDK_PATH): wasi-sdk.tar.gz
+$(WASI_SDK_PATH): $(WASI_SDK_TARBALL)
 	mkdir -p $@
-	tar -xzf wasi-sdk.tar.gz \
+	tar -xzf $(WASI_SDK_TARBALL) \
 		-C $@ \
 		--strip-components 1
 
