@@ -90,7 +90,8 @@ zlib-clean:
 ##
 python-build-clean: python-clean python-build
 
-python-build: $(WASI_SDK_PATH)
+python-build: $(WASI_SDK_PATH) $(BUILDDIR)/wasix/python.wasm
+$(BUILDDIR)/wasix/python.wasm:
 	cd $(CPYTHON_DIR) && \
 		./Tools/wasm/wasm_build.py wasix build && \
 		./Tools/wasm/wasm_build.py wasix stdlib
@@ -98,7 +99,6 @@ python-build: $(WASI_SDK_PATH)
 	wasm-opt -O2 --asyncify \
 		$(BUILDDIR)/wasix/python.wasm.unopt \
 		-o $(BUILDDIR)/wasix/python.wasm
-
 
 python-autoconf:
 	docker run --rm \
@@ -138,7 +138,7 @@ $(WASI_SDK_PATH): $(WASI_SDK_TARBALL)
 
 wasi-sdk: $(WASI_SDK_PATH)
 
-.python-zip-name:
+.python-zip-name: $(BUILDDIR)/wasix/python.wasm
 	wasmer run \
 		--mapdir /usr:$(BUILDDIR)/wasix/usr \
 		--mapdir /app/:$(CPYTHON_DIR)/PC/layout/support \
