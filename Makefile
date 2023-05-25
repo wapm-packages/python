@@ -95,6 +95,18 @@ python-build: $(WASI_SDK_PATH)
 		./Tools/wasm/wasm_build.py wasi build && \
 		./Tools/wasm/wasm_build.py wasi stdlib
 
+python-autoconf:
+	docker run --rm \
+		-w /cpython \
+		-v $(PWD)/cpython:/cpython \
+		autoconf2.69 \
+		autoconf
+	docker run --rm \
+		-v $(PWD)/cpython:/cpython \
+		autoconf2.69 \
+		chown -R $(shell id -u):$(shell id -g) /cpython
+
+
 python-clean:
 	rm -rf \
 		$(BUILDDIR)/build \
