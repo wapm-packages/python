@@ -41,6 +41,8 @@ wasmer --net $BUILDDIR/python.wasm --mapdir=/lib:./lib --mapdir=/usr:$BUILDDIR/u
 To download the WASI SDK and build cpython and its dependencies:
 
 ```
+git submodule init
+git submodule update --recursive
 make wasi-sdk
 make
 ```
