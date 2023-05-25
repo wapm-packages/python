@@ -4,6 +4,7 @@ WASIXLIBC_DIR = $(PWD)/libs/wasix-libc
 ZLIB_DIR = $(PWD)/libs/zlib
 BUILD_DIR = $(PWD)/builddir
 DOWNLOADS_DIR = $(PWD)/downloads
+WAPM_DIR = $(PWD)/wapm
 
 # used by cpython's wasm build scripts
 export WASI_SDK_PATH = $(PWD)/wasi-sdk
@@ -13,6 +14,7 @@ export WASM_RUNTIME = wasmer
 # BUILDDIR is used by $(CPYTHON_DIR)/Tools/wasm/wasm_build.py, not to be
 # confused with BUILD_DIR
 export BUILDDIR = $(CPYTHON_DIR)/builddir-wasix-libc
+export PYTHON_LIB_ZIP = $(BUILDDIR)/wasi/usr/local/lib/
 
 WASI_SDK_VERSION_MAJOR = 20
 WASI_SDK_VERSION_MINOR = 0
@@ -118,4 +120,20 @@ $(WASI_SDK_PATH): $(WASI_SDK_TARBALL)
 
 wasi-sdk: $(WASI_SDK_PATH)
 
-.PHONY: vars wasi-sdk clean distclean python-clean zlib-clean wasixlibc-clean
+.python-zip-name:
+	wasmer run \
+		--mapdir /usr:$(BUILDDIR)/wasi/usr \
+		--mapdir /app/:$(CPYTHON_DIR)/PC/layout/support \
+		$(BUILDDIR)/wasi/python.wasm \
+		-- \
+		-c "import app.constants as constants; print(constants.PYTHON_ZIP_NAME)" > $@
+
+wapm: ZIP_FILE=$(BUILDDIR)/wasi/usr/local/lib/$(shell cat .python-zip-name)
+wapm: .python-zip-name $(BUILDDIR)/wasi/python.wasm
+	cp $(BUILDDIR)/wasi/python.wasm $(WAPM_DIR)/bin/python.wasm
+	rm -rf $(WAPM_DIR)/usr/local/lib
+	mkdir -p $(WAPM_DIR)/usr/local/lib
+	cd $(WAPM_DIR)/usr/local/lib && \
+		unzip $(ZIP_FILE)
+
+.PHONY: vars wapm wasi-sdk clean distclean python-clean zlib-clean wasixlibc-clean
