@@ -17,3 +17,5 @@
 
 # Ignore build directories
 build*
+download*
+wasi-sdk*
