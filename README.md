@@ -6,21 +6,41 @@ You can install Python with:
 wapm install python
 ```
 
-## Running
+## Running 
 
-You can run Python cli
+### From WAPM
 
-```shell
-$ wasmer python.wasm --mapdir=lib:lib -- pythonfile.py
+Run a locally python script in the `./lib` directory:
+
 ```
+wasmer --net python/python --mapdir=/lib:./lib -- /lib/pythonfile.py
+```
+
+**Note:** this assumes you have a file named `./lib/pythonfile.py`.
+
+### From Locally-built Binary
+
+Follow the "Building from Source" instructions below, then:
+
+```
+BUILDDIR="$(PWD)/cpython/builddir-wasix-libc/wasi/"
+wasmer --net $BUILDDIR/python.wasm --mapdir=/lib:./lib --mapdir=/usr:$BUILDDIR/usr -- /lib/pythonfile.py
+```
+**Note:** this assumes you have a file named `./lib/pythonfile.py`.
 
 ## Building from Source
 
-You will need [Wasix](https://github.com/wasmer/wasix) to build the `python.wasm` file.
+### Dependencies
 
+* GNU Make
+* WASI SDK
+* native C toolchain (eg. gcc or clang)
 
-Steps:
+### Instructions
 
-1. Setup wasix, see
-   [Installation Instructions](https://github.com/wasmerio/wasix)
-2. Run `./build.sh`
+To download the WASI SDK and build cpython and its dependencies:
+
+```
+make wasi-sdk
+make
+```
