@@ -12,10 +12,11 @@
 # except for .gitignore
 !.gitignore
 
-# Ignore pyc files
-*.pyc
-
 # Ignore build directories
 build*
 download*
 wasi-sdk*
+
+# ignore pycache
+__pycache__
+
