@@ -30,6 +30,14 @@ ifeq ($(UNAME_S),Darwin)
 	WASI_SDK_URL_PLATFORM = macos
 endif
 
+check_defined = \
+    $(strip $(foreach 1,$1, \
+        $(call __check_defined,$1,$(strip $(value 2)))))
+__check_defined = \
+    $(if $(value $1),, \
+        $(error Undefined $1$(if $2, ($2))$(if $(value @), \
+                required by target `$@')))
+
 WASI_SDK_URL = $(WASI_SDK_BASE_URL)/wasi-sdk-$(WASI_SDK_VERSION_MAJOR).$(WASI_SDK_VERSION_MINOR)-$(WASI_SDK_URL_PLATFORM).tar.gz
 
 default: wasixlibc-build zlib-build python-build
@@ -50,7 +58,6 @@ vars:
 	@@echo ZLIB_LIBS = $(ZLIB_LIBS)
 	@@echo WASI_SDK_PATH = $(WASI_SDK_PATH)
 
-
 clean: python-clean zlib-clean wasixlibc-clean
 
 all:
@@ -61,6 +68,36 @@ all:
 
 distclean: clean python-distclean
 	rm -rf ./wasi-sdk*
+
+WASMER_REPO_DIR := $(WASMER_REPO_DIR)
+wasmer-cargo-run: CMD=
+wasmer-cargo-run: OUTPUT_FILE="$(PWD)/output.log"
+wasmer-cargo-run: WASMER_RUN_ARGS=
+wasmer-cargo-run:
+	@:$(call check_defined, WASMER_REPO_DIR, Wasmer git repo directory)
+	pushd $(WASMER_REPO_DIR)/lib/cli && \
+		cargo run \
+			-F compiler,cranelift,debug \
+			-- \
+			run --net $(WASMER_RUN_ARGS) \
+			--mapdir /usr:$(BUILDDIR)/wasix/usr \
+			--mapdir /examples:$(WAPM_DIR)/usr/local/share/python/examples \
+			$(BUILDDIR)/wasix/python.wasm \
+			$(CMD)
+
+wasmer-run: CMD=
+wasmer-run: OUTPUT_FILE="$(PWD)/output.log"
+wasmer-run: WASMER_RUN_ARGS=
+wasmer-run:
+	wasmer \
+		run --net $(WASMER_RUN_ARGS) \
+		--mapdir /usr:$(BUILDDIR)/wasix/usr \
+		--mapdir /examples:$(WAPM_DIR)/usr/local/share/python/examples \
+		$(BUILDDIR)/wasix/python.wasm \
+		$(CMD) \
+
+cargo-run: $(WASM_RUNTIME)-cargo-run
+run: $(WASM_RUNTIME)-run
 
 ##
 #  wasix-libc bits
@@ -103,7 +140,9 @@ python-build-clean:
 	$(MAKE) python-clean
 	$(MAKE) python-build
 
-python-build: $(WASI_SDK_PATH) $(BUILDDIR)/wasix/python.wasm
+python-build:
+	$(MAKE) $(WASI_SDK_PATH)
+	$(MAKE) $(BUILDDIR)/wasix/python.wasm
 $(BUILDDIR)/wasix/python.wasm:
 	cd $(CPYTHON_DIR) && \
 		./Tools/wasm/wasm_build.py wasix build && \
@@ -167,4 +206,4 @@ wapm: .python-zip-name $(BUILDDIR)/wasix/python.wasm
 	cd $(WAPM_DIR)/usr/local/lib && \
 		unzip $(ZIP_FILE)
 
-.PHONY: vars wapm wasi-sdk clean distclean python-clean zlib-clean wasixlibc-clean
+.PHONY: vars wapm wasi-sdk clean distclean python-clean zlib-clean wasixlibc-clean run cargo-run python-build-clean zlib-build-clean wasixlibc-build-clean all
