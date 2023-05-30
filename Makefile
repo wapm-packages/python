@@ -198,12 +198,20 @@ wasi-sdk: $(WASI_SDK_PATH)
 		-- \
 		-c "import app.constants as constants; print(constants.PYTHON_ZIP_NAME)" > $@
 
+.python-stdlib-dirname: $(BUILDDIR)/wasix/python.wasm
+	wasmer run \
+		--mapdir /usr:$(BUILDDIR)/wasix/usr \
+		--mapdir /app/:$(CPYTHON_DIR)/PC/layout/support \
+		$(BUILDDIR)/wasix/python.wasm \
+		-- \
+		-c 'import app.constants as constants; print(f"python{constants.VER_MAJOR}.{constants.VER_MINOR}")' > $@
+
 wapm: ZIP_FILE=$(BUILDDIR)/wasix/usr/local/lib/$(shell cat .python-zip-name)
-wapm: .python-zip-name $(BUILDDIR)/wasix/python.wasm
+wapm: WAPM_STDLIB_DIR=$(WAPM_DIR)/usr/local/lib/$(shell cat .python-stdlib-dirname)
+wapm: .python-stdlib-dirname .python-zip-name $(BUILDDIR)/wasix/python.wasm
 	cp $(BUILDDIR)/wasix/python.wasm $(WAPM_DIR)/bin/python.wasm
 	rm -rf $(WAPM_DIR)/usr/local/lib
-	mkdir -p $(WAPM_DIR)/usr/local/lib
-	cd $(WAPM_DIR)/usr/local/lib && \
-		unzip $(ZIP_FILE)
+	mkdir -p $(WAPM_STDLIB_DIR)
+	cd $(WAPM_STDLIB_DIR) && unzip $(ZIP_FILE)
 
 .PHONY: vars wapm wasi-sdk clean distclean python-clean zlib-clean wasixlibc-clean run cargo-run python-build-clean zlib-build-clean wasixlibc-build-clean all
