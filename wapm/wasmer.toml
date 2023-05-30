@@ -19,3 +19,4 @@ module = "python"
 
 [fs]
 "/usr"="usr"
+"/dev/shm"="dev/shm"
