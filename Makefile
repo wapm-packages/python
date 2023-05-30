@@ -71,7 +71,6 @@ distclean: clean python-distclean
 
 WASMER_REPO_DIR := $(WASMER_REPO_DIR)
 wasmer-cargo-run: CMD=
-wasmer-cargo-run: OUTPUT_FILE="$(PWD)/output.log"
 wasmer-cargo-run: WASMER_RUN_ARGS=
 wasmer-cargo-run:
 	@:$(call check_defined, WASMER_REPO_DIR, Wasmer git repo directory)
@@ -86,7 +85,6 @@ wasmer-cargo-run:
 			$(CMD)
 
 wasmer-run: CMD=
-wasmer-run: OUTPUT_FILE="$(PWD)/output.log"
 wasmer-run: WASMER_RUN_ARGS=
 wasmer-run:
 	wasmer \
@@ -96,6 +94,17 @@ wasmer-run:
 		$(BUILDDIR)/wasix/python.wasm \
 		$(CMD) \
 
+wasmer-wapm-run: CMD=
+wasmer-wapm-run: WASMER_RUN_ARGS=
+wasmer-wapm-run:
+	wasmer \
+		run --net $(WASMER_RUN_ARGS) \
+		--mapdir /usr:$(WAPM_DIR)/usr \
+		--mapdir /examples:$(WAPM_DIR)/usr/local/share/python/examples \
+		$(WAPM_DIR)/bin/python.wasm \
+		$(CMD) \
+
+wapm-run: $(WASM_RUNTIME)-wapm-run
 cargo-run: $(WASM_RUNTIME)-cargo-run
 run: $(WASM_RUNTIME)-run
 
