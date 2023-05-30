@@ -53,26 +53,37 @@ vars:
 
 clean: python-clean zlib-clean wasixlibc-clean
 
+all:
+	$(MAKE) wasixlibc-build-clean
+	$(MAKE) zlib-build-clean
+	$(MAKE) python-autoconf
+	$(MAKE) python-build-clean
+
 distclean: clean python-distclean
 	rm -rf ./wasi-sdk*
 
 ##
 #  wasix-libc bits
 ##
-wasixlibc-build-clean: wasixlibc-build wasixlibc-clean
+wasixlibc-build-clean:
+	$(MAKE) wasixlibc-clean
+	$(MAKE) wasixlibc-build
+
 wasixlibc-build: export TARGET_ARCH=wasm32
 wasixlibc-build: export TARGET_OS=wasix
 wasixlibc-build: wasixlibc-clean
 	$(MAKE) -C $(WASIXLIBC_DIR) -j 28 SYSROOT=$(WASI_SYSROOT)
 
 wasixlibc-clean:
-	$(MAKE) -C $(WASIXLIBC_DIR) clean SYSROOT=$(WASI_SYSROOT)
 	rm -rf $(WASI_SYSROOT)
 
 ##
 #  zlib bits
 ##
-zlib-build-clean: zlib-clean zlib-build
+zlib-build-clean:
+	$(MAKE) zlib-clean
+	$(MAKE) zlib-build
+
 zlib-build: export CC=$(WASI_SDK_PATH)/bin/clang
 zlib-build: export RANLIB=$(WASI_SDK_PATH)/bin/ranlib
 zlib-build: $(WASI_SDK_PATH)
@@ -88,7 +99,9 @@ zlib-clean:
 ##
 #  python bits
 ##
-python-build-clean: python-clean python-build
+python-build-clean:
+	$(MAKE) python-clean
+	$(MAKE) python-build
 
 python-build: $(WASI_SDK_PATH) $(BUILDDIR)/wasix/python.wasm
 $(BUILDDIR)/wasix/python.wasm:
